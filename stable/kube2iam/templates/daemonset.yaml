@@ -26,10 +26,19 @@ spec:
       {{- end }}
     spec:
 {{- include "kube2iam.imagePullSecrets" . | indent 6 }}
+      {{- if .Values.securityContext.enabled }}
+      securityContext:
+        fsGroup: {{ .Values.securityContext.fsGroup }}
+      {{- end }}
       containers:
         - name: kube2iam
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          {{- if .Values.securityContext.enabled }}
+          securityContext:
+            runAsUser: {{ .Values.securityContext.runAsUser }}
+            runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}
+          {{- end }}
           args:
             - --host-interface={{ .Values.host.interface }}
             - --node=$(NODE_NAME)

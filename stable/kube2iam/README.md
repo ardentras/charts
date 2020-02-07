@@ -63,6 +63,11 @@ Parameter | Description | Default
 `prometheus.serviceMonitor.namespace` | An alternative namespace in which to install the ServiceMonitor | `""`
 `rbac.create` | If true, create & use RBAC resources | `false`
 `rbac.serviceAccountName` | existing ServiceAccount to use (ignored if rbac.create=true) | `default`
+`rbac.podSecurityPolicy` | If true, creates a PodSecurityPolicy for the DaemonSet | `false`
+`securityContext.enabled` | If true, adds securityContext params to the DaemonSet | `false`
+`securityContext.fsGroup` | Filesystem group | `1001`
+`securityContext.runAsUser` | Container user ID | `1001`
+`securityContext.runAsNonRoot` | If true, forces runAsUser to be non-root | `true`
 `resources` | pod resource requests & limits | `{}`
 `updateStrategy` | Strategy for DaemonSet updates (requires Kubernetes 1.6+) | `OnDelete`
 `verbose` | Enable verbose output | `false`

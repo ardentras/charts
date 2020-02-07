@@ -1,0 +1,50 @@
+{{- if .Values.rbac.podSecurityPolicy }}
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ template "kube2iam.name" . }}
+    helm.sh/chart: {{ template "kube2iam.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ template "kube2iam.fullname" . }}
+spec:
+  allowPrivilegeEscalation: false
+  fsGroup:
+    rule: 'MustRunAs'
+    ranges:
+      - min: {{ .Values.securityContext.fsGroup }}
+        max: {{ .Values.securityContext.fsGroup }}
+  hostIPC: false
+  hostNetwork: false
+  hostPID: false
+  hostPorts:
+    - min: {{ .Values.host.port }}
+      max: {{ .Values.host.port }}
+    {{- if .Values.prometheus.metricsPort }}
+    {{- if not (eq .Values.prometheus.metricsPort .Values.host.port) }}
+    - min: {{ .Values.prometheus.metricsPort }}
+      max: {{ .Values.prometheus.metricsPort }}
+    {{- end}}
+    {{- end}}
+  privileged: false
+  readOnlyRootFilesystem: false
+  requiredDropCapabilities:
+    - ALL
+  runAsUser:
+    rule: 'MustRunAs'
+    ranges:
+      - min: {{ .Values.securityContext.runAsUser }}
+        max: {{ .Values.securityContext.runAsUser }}
+  seLinux:
+    rule: 'RunAsAny'
+  supplementalGroups:
+    rule: 'MustRunAs'
+    ranges:
+      - min: {{ .Values.securityContext.runAsUser }}
+        max: {{ .Values.securityContext.runAsUser }}
+  volumes:
+    - 'configMap'
+    - 'secret'
+    - 'emptyDir'
+{{- end }}
